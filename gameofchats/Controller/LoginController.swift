@@ -57,38 +57,6 @@ class LoginController: UIViewController {
         }
     }
     
-    @objc func handleRegister() {
-        
-        guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
-            return
-        }
-        
-        Auth.auth().createUser(withEmail: email, password: password) { (user, error) in // Creates account in Auth
-            
-            if error != nil {
-                print(error!.localizedDescription)
-                return
-            }
-            
-            guard let uid = user?.uid else {
-                return
-            }
-            
-            let ref = Firebase.Database.database().reference()
-            let values = ["name": name, "email": email]
-            let usersReference = ref.child("users").child(uid)
-            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in // Creates/saves user info in database
-                if err != nil {
-                    print(err!.localizedDescription)
-                    return
-                }
-                
-                self.dismiss(animated: true, completion: nil)
-
-            })
-        } 
-    }
-    
     let nameTextField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "Name"
@@ -125,11 +93,14 @@ class LoginController: UIViewController {
         return tf
     }()
     
-    let profileImageView: UIImageView = {
+    lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "winter_wolf")
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill
+        
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSelectProfileImageVIew)))
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     
