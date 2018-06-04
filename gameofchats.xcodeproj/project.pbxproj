@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C916CBA520BE40D700163E73 /* LoginController+handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C916CBA420BE40D700163E73 /* LoginController+handlers.swift */; };
+		C933D95720C4E38000195D27 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C933D95620C4E38000195D27 /* Extensions.swift */; };
 		C938912020BCB85C008D84F4 /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C938911F20BCB85C008D84F4 /* NewMessageController.swift */; };
 		C954057C20B244060041C71D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C954057B20B244060041C71D /* GoogleService-Info.plist */; };
 		C9C293DF20BCC044003142A7 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C293DE20BCC044003142A7 /* User.swift */; };
@@ -23,6 +24,7 @@
 /* Begin PBXFileReference section */
 		4F2BC6950F007126B077840C /* Pods-gameofchats.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gameofchats.release.xcconfig"; path = "Pods/Target Support Files/Pods-gameofchats/Pods-gameofchats.release.xcconfig"; sourceTree = "<group>"; };
 		C916CBA420BE40D700163E73 /* LoginController+handlers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginController+handlers.swift"; sourceTree = "<group>"; };
+		C933D95620C4E38000195D27 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		C938911F20BCB85C008D84F4 /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
 		C954057B20B244060041C71D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C9C293DE20BCC044003142A7 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -67,6 +69,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		C933D95520C4E35300195D27 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				C933D95620C4E38000195D27 /* Extensions.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		C9C293DD20BCC014003142A7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -96,6 +106,7 @@
 		C9ED5B0420AFA02500C9E5F7 /* gameofchats */ = {
 			isa = PBXGroup;
 			children = (
+				C933D95520C4E35300195D27 /* Helpers */,
 				C9C293DD20BCC014003142A7 /* Model */,
 				C9ED5B1720AFA42C00C9E5F7 /* Controller */,
 				C9ED5B0520AFA02500C9E5F7 /* AppDelegate.swift */,
@@ -244,6 +255,7 @@
 				C9ED5B1920AFA46800C9E5F7 /* LoginController.swift in Sources */,
 				C9C293DF20BCC044003142A7 /* User.swift in Sources */,
 				C9ED5B0620AFA02500C9E5F7 /* AppDelegate.swift in Sources */,
+				C933D95720C4E38000195D27 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
