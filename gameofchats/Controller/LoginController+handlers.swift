@@ -56,6 +56,8 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                 return
             }
             
+            self.messagesController?.fetchUserAndSetupNavBarTitle()
+            
             self.dismiss(animated: true, completion: nil)
             print("Successfully logged in user \(email)")
         }
@@ -110,6 +112,9 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                 print(err!.localizedDescription)
                 return
             }
+            
+            //self.messagesController?.fetchUserAndSetupNavBarTitle()
+            self.messagesController?.navigationItem.title = values["name"] as? String
             
             self.dismiss(animated: true, completion: nil)
             

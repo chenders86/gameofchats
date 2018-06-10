@@ -22,11 +22,13 @@ class MessagesController: UITableViewController {
         
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
-        observeMessages()
-        print("OBSERVING MESSAGES")
+        checkIfUserIsLoggedIn()
+        
+        observeMessages() // Possibly move to viewDidAppear and remove observer in viewDidDisappear
     }
     
     var messages = [Message]()
+    var messagesDictionary = [String: Message]()
     
     func observeMessages() {
         let ref = Database.database().reference().child("messages")
@@ -35,7 +37,15 @@ class MessagesController: UITableViewController {
             if let dictionary = snapshot.value as? [String: AnyObject] {
                 let message = Message()
                 message.setValuesForKeys(dictionary)
-                self.messages.append(message)
+                
+                if let toId = message.toId, let _ = message.timestamp {
+                    self.messagesDictionary[toId] = message
+                    self.messages = Array(self.messagesDictionary.values)
+                    self.messages.sort(by: { (message1, message2) -> Bool in
+                        
+                        return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+                    })
+                }
                 
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -66,7 +76,7 @@ class MessagesController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
         
-        checkIfUserIsLoggedIn()
+//        checkIfUserIsLoggedIn()
     }
     
     @objc func handleNewMessage() {
@@ -80,23 +90,26 @@ class MessagesController: UITableViewController {
         if Auth.auth().currentUser?.uid == nil {
             handleLogout()
         } else {
+            fetchUserAndSetupNavBarTitle()
+            print("Observing Messages")
+        }
+    }
+    
+    func fetchUserAndSetupNavBarTitle() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
             
-            guard let uid = Auth.auth().currentUser?.uid else {
-                return
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                
+                let user = User()
+                user.setValuesForKeys(dictionary)
+                self.setupNavBarWithUser(user: user)
             }
             
-            Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                
-                if let dictionary = snapshot.value as? [String: AnyObject] {
-                    //self.navigationItem.title = dictionary["name"] as? String
-                    
-                    let user = User()
-                    user.setValuesForKeys(dictionary)
-                    self.setupNavBarWithUser(user: user)
-                }
-                
-            }, withCancel: nil)
-        }
+        }, withCancel: nil)
     }
     
     func setupNavBarWithUser(user: User) {
@@ -148,6 +161,7 @@ class MessagesController: UITableViewController {
         }
         navigationItem.title = nil
         let loginController = LoginController()
+        loginController.messagesController = self
         present(loginController, animated: true, completion: nil)
     }
 }
