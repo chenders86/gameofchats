@@ -9,7 +9,6 @@
 import UIKit
 
 class Message: NSObject {
-    
     @objc var fromId: String?
     @objc var text: String?
     @objc var timestamp: NSNumber?

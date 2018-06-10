@@ -82,6 +82,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate {
         let timestamp = NSDate().timeIntervalSince1970
         let values = ["text": inputTextField.text!, "toId": toId, "fromId": fromId, "timestamp": timestamp] as [String : Any] 
         childRef.updateChildValues(values)
+        print("Message Sent")
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

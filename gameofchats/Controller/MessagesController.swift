@@ -23,6 +23,7 @@ class MessagesController: UITableViewController {
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
         
         observeMessages()
+        print("OBSERVING MESSAGES")
     }
     
     var messages = [Message]()

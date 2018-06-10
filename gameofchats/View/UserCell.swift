@@ -31,8 +31,7 @@ class UserCell: UITableViewCell {
                     
                 }, withCancel: nil)
             }
-            
-            //self.textLabel?.text = message?.toId
+
             detailTextLabel?.text = message?.text
         }
     }
@@ -53,6 +52,13 @@ class UserCell: UITableViewCell {
         return imageView
     }()
     
+    let timeLabel: UILabel = {
+       let label = UILabel()
+        label.text = "HH:MM:SS"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
         
@@ -61,6 +67,13 @@ class UserCell: UITableViewCell {
         profileImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
         profileImageView.widthAnchor.constraint(equalToConstant: 48).isActive = true
         profileImageView.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        
+        addSubview(timeLabel)
+        timeLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        //timeLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        timeLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        timeLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        //timeLabel.heightAnchor.constraint(equalTo: textLabel!.heightAnchor).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {
