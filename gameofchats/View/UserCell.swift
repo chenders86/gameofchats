@@ -30,32 +30,26 @@ class UserCell: UITableViewCell {
     
     private func setupNameAndProfileImage() {
         
-        let chatPartnerId: String?
         
-        if message?.fromId == Auth.auth().currentUser?.uid {
-            chatPartnerId = message?.toId
-        } else {
-            chatPartnerId = message?.fromId
+        guard let id = message?.chatPartnerId() else { // guard rather than if let to unwrap id - opposite of what he did in tutorial
+            return
         }
-        
-        if let id = chatPartnerId {
-            let ref = Database.database().reference().child("users").child(id)
-            ref.observeSingleEvent(of: .value, with: { (snapshot) in
+//      if let id = message?.chatPartnerId {
+        let ref = Database.database().reference().child("users").child(id)
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            if let dictionary = snapshot.value as? [String: AnyObject] {
                 
-                if let dictionary = snapshot.value as? [String: AnyObject] {
+                self.textLabel?.text = dictionary["name"] as? String
+                
+                if let profileImageUrl = dictionary["profileImageUrl"] as? String {
                     
-                    self.textLabel?.text = dictionary["name"] as? String
+                    self.profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageUrl)
                     
-                    if let profileImageUrl = dictionary["profileImageUrl"] as? String {
-                        
-                        self.profileImageView.loadImageUsingCacheWithUrlString(urlString: profileImageUrl)
-                        
-                    }
                 }
-                
-            }, withCancel: nil)
-        }
-        
+            }
+            
+        }, withCancel: nil)
     }
     
     override func layoutSubviews() {

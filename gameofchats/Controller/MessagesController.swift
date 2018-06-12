@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MessagesController.swift
 //  gameofchats
 //
 //  Created by Casey Henderson on 5/18/18.
@@ -56,6 +56,7 @@ class MessagesController: UITableViewController {
                     
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
+                        print("TABLEVIEW RELOADED")
                     }
                 }
                 
@@ -107,10 +108,27 @@ class MessagesController: UITableViewController {
         return 72
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(true)
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
         
-//        checkIfUserIsLoggedIn()
+        guard let chatPartnerId = message.chatPartnerId() else {
+            return
+        }
+        
+        let ref = Database.database().reference().child("users").child(chatPartnerId)
+        
+        ref.observeSingleEvent(of: .value, with: { (snapshot) in
+            
+            guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                return
+            }
+            
+            let user = User()
+            user.id = chatPartnerId
+            user.setValuesForKeys(dictionary)
+            self.showChatControllerForUser(user: user)
+            
+        }, withCancel: nil)
     }
     
     @objc func handleNewMessage() {
