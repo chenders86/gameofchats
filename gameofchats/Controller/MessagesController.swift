@@ -45,8 +45,8 @@ class MessagesController: UITableViewController {
                     let message = Message()
                     message.setValuesForKeys(dictionary)
                     
-                    if let toId = message.toId, let _ = message.timestamp {
-                        self.messagesDictionary[toId] = message
+                    if let chatPartnerId = message.chatPartnerId(), let _ = message.timestamp {
+                        self.messagesDictionary[chatPartnerId] = message
                         self.messages = Array(self.messagesDictionary.values)
                         self.messages.sort(by: { (message1, message2) -> Bool in
                             
@@ -56,7 +56,6 @@ class MessagesController: UITableViewController {
                     
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
-                        print("TABLEVIEW RELOADED")
                     }
                 }
                 
