@@ -17,14 +17,29 @@ class ChatMessageCell: UICollectionViewCell {
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.backgroundColor = UIColor.clear
         tv.textColor = UIColor.white
+        tv.isEditable = false
         return tv
     }()
     
+    let profileImageView: UIImageView = {
+       let imageView = UIImageView()
+        imageView.image = UIImage(named: "winter_wolf")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.cornerRadius = 12
+        imageView.layer.masksToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
+    }()
+    
+    static let blueColor = UIColor(r: 0, g: 137, b: 249)
+    
     var bubbleWidthAnchor: NSLayoutConstraint?
+    var bubbleViewRightAnchor: NSLayoutConstraint?
+    var bubbleViewLeftAnchor: NSLayoutConstraint?
     
     let bubbleView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(r: 0, g: 137, b: 249)
+        view.backgroundColor = blueColor
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 12
         view.layer.masksToBounds = true
@@ -36,8 +51,17 @@ class ChatMessageCell: UICollectionViewCell {
         
         addSubview(bubbleView)
         addSubview(textView)
+        addSubview(profileImageView)
         
-        bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8).isActive = true
+        profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
+        profileImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        
+        bubbleViewRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
+        bubbleViewRightAnchor?.isActive = true
+        bubbleViewLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
+//        bubbleViewLeftAnchor?.isActive = true
         bubbleView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor?.isActive = true
