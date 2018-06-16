@@ -46,7 +46,7 @@ class ChatMessageCell: UICollectionViewCell {
         return view
     }()
     
-    override init(frame: CGRect) {
+    override init(frame: CGRect) { // One of these constraints is causing a slight glitch. Ep 14?
         super.init(frame: frame)
         
         addSubview(bubbleView)
@@ -60,11 +60,15 @@ class ChatMessageCell: UICollectionViewCell {
         
         bubbleViewRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
         bubbleViewRightAnchor?.isActive = true
+        
         bubbleViewLeftAnchor = bubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
-//        bubbleViewLeftAnchor?.isActive = true
+        bubbleViewLeftAnchor?.isActive = false
+        
         bubbleView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        
         bubbleWidthAnchor = bubbleView.widthAnchor.constraint(equalToConstant: 200)
         bubbleWidthAnchor?.isActive = true
+        
         bubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
         textView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor, constant: 8).isActive = true
