@@ -46,7 +46,7 @@ class ChatMessageCell: UICollectionViewCell {
         return view
     }()
     
-    override init(frame: CGRect) { // One of these constraints is causing a slight glitch. Ep 14?
+    override init(frame: CGRect) { // One of these constraints is causing a warning.
         super.init(frame: frame)
         
         addSubview(bubbleView)
