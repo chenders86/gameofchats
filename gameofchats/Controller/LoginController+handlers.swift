@@ -113,7 +113,7 @@ extension LoginController: UIImagePickerControllerDelegate, UINavigationControll
                 return
             }
             
-            //self.messagesController?.fetchUserAndSetupNavBarTitle()
+            //self.messagesController?.fetchUserAndSetupNavBarTitle() // if you're just now registering you won't need this as you have no messages
             self.messagesController?.navigationItem.title = values["name"] as? String
             
             self.dismiss(animated: true, completion: nil)
