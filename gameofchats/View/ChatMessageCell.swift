@@ -18,6 +18,8 @@ class ChatMessageCell: UICollectionViewCell {
         tv.backgroundColor = UIColor.clear
         tv.textColor = UIColor.white
         tv.isEditable = false
+//        tv.isUserInteractionEnabled = false // stops it from scrolling
+//        tv.isSelectable = false // also stops scrolling
         return tv
     }()
     

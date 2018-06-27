@@ -30,7 +30,6 @@ class UserCell: UITableViewCell {
     
     private func setupNameAndProfileImage() {
         
-        
         guard let id = message?.chatPartnerId() else { // guard rather than if let to unwrap id - opposite of what he did in tutorial
             return
         }
