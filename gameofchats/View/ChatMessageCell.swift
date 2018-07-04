@@ -10,16 +10,17 @@ import UIKit
 
 class ChatMessageCell: UICollectionViewCell {
     
+    var chatLogController: ChatLogController?
+    
     let textView: UITextView = {
         let tv = UITextView()
-        tv.text = "SAMPLE TEXT FOR NOW"
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.translatesAutoresizingMaskIntoConstraints = false
         tv.backgroundColor = UIColor.clear
         tv.textColor = UIColor.white
+        tv.isUserInteractionEnabled = false
         tv.isEditable = false
-//        tv.isUserInteractionEnabled = false // stops it from scrolling
-//        tv.isSelectable = false // also stops scrolling
+        tv.isSelectable = true
         return tv
     }()
     
@@ -33,14 +34,25 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let messageImageView: UIImageView = {
+    lazy var messageImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = 12 // will probably need to be 16
+        imageView.layer.cornerRadius = 12
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
+        imageView.isUserInteractionEnabled = true
+
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
+
         return imageView
     }()
+    
+    @objc func handleZoomTap(tapGesture: UITapGestureRecognizer) {
+        if let imageVIew = tapGesture.view as? UIImageView {
+            
+            self.chatLogController?.performZoomInForStartingImageView(startingImageVIew: imageVIew)
+        }
+    }
     
     static let blueColor = UIColor(r: 0, g: 137, b: 249)
     
@@ -54,21 +66,17 @@ class ChatMessageCell: UICollectionViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 12
         view.layer.masksToBounds = true
+        view.isUserInteractionEnabled = true
         return view
     }()
     
     override init(frame: CGRect) { // One of these constraints is causing a warning.
         super.init(frame: frame)
         
-        addSubview(profileImageView)
         addSubview(bubbleView)
         addSubview(textView)
+        addSubview(profileImageView)
         bubbleView.addSubview(messageImageView)
-        
-        messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
-        messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
-        messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
-        messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
         
         profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
         profileImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
@@ -92,6 +100,12 @@ class ChatMessageCell: UICollectionViewCell {
         textView.rightAnchor.constraint(equalTo: bubbleView.rightAnchor).isActive = true
         textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         textView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+        
+        messageImageView.leftAnchor.constraint(equalTo: bubbleView.leftAnchor).isActive = true
+        messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
+        messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
+        messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

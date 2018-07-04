@@ -62,14 +62,16 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0) // look up what this is
-//        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)               // look up what this is
+
+        collectionView?.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+//        collectionView?.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)       // look up what this is
         collectionView?.alwaysBounceVertical = true
         collectionView?.backgroundColor = UIColor.white
         collectionView?.register(ChatMessageCell.self, forCellWithReuseIdentifier: cellId)
         
         collectionView?.keyboardDismissMode = .interactive
+        
+//        collectionView?.scrollsToTop = true
         
         setupKeyboardObservers()
     }
@@ -192,12 +194,13 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardDidShow), name: .UIKeyboardDidShow, object: nil)
         
-//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: .UIKeyboardWillShow, object: nil)
 //
 //        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: .UIKeyboardWillHide, object: nil)
     }
     
-    @objc func handleKeyboardDidShow() {
+    @objc func handleKeyboardDidShow() { // This is being activated by clicking on the bubbleTextView, thus creating the scrolling effect. Need better place to call.
+        print("KEYBOARD DID SHOW")
         if messages.count > 0 {
             let indexPath = NSIndexPath(item: messages.count - 1, section: 0)
             collectionView?.scrollToItem(at: indexPath as IndexPath, at: .top, animated: true)
@@ -210,19 +213,20 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         NotificationCenter.default.removeObserver(self)
     }
     
-    var containerViewBottomAnchor: NSLayoutConstraint?
-    
-//    @objc func handleKeyboardWillShow(notification: Notification) {
+    @objc func handleKeyboardWillShow(notification: Notification) {
+        
+        print("KEYBOARD WILL SHOW")
+        
 //        let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
 //        let keyboardDuration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue
-//
-//
+
+
 //        containerViewBottomAnchor?.constant = -keyboardFrame!.height // Anytime you want to animate constraints you call layoutIfNeeded() AFTER you modify constraint
-//
+
 //        UIView.animate(withDuration: keyboardDuration!) {
 //            self.view.layoutIfNeeded() // vs layoutSubviews???
 //        }
-//    }
+    }
 
 //    @objc func handleKeyboardWillHide(notification: Notification) {
 //        let keyboardDuration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue
@@ -241,13 +245,15 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! ChatMessageCell
         
+        cell.chatLogController = self
+        
         let message = messages[indexPath.item]
         cell.textView.text = message.text
         
         setupCell(cell: cell, message: message)
         
         if let text = message.text {
-         cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32 // May be causing previous images to resize
+         cell.bubbleWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
         } else if message.imageUrl != nil {
             cell.bubbleWidthAnchor?.constant = 200
         }
@@ -262,15 +268,19 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         if message.fromId == Auth.auth().currentUser?.uid {
             cell.bubbleView.backgroundColor = ChatMessageCell.blueColor
+            cell.textView.isHidden = false
             cell.textView.textColor = UIColor.white
             cell.profileImageView.isHidden = true
+            cell.messageImageView.isHidden = true
             
             cell.bubbleViewRightAnchor?.isActive = true
             cell.bubbleViewLeftAnchor?.isActive = false
         } else {
             cell.bubbleView.backgroundColor = UIColor(r: 220, g: 220, b: 220)
             cell.textView.textColor = UIColor.black
+            cell.textView.isHidden = false
             cell.profileImageView.isHidden = false
+            cell.messageImageView.isHidden = true
             
             cell.bubbleViewRightAnchor?.isActive = false
             cell.bubbleViewLeftAnchor?.isActive = true
@@ -278,6 +288,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         
         if let messageImageUrl = message.imageUrl {
             cell.messageImageView.loadImageUsingCacheWithUrlString(urlString: messageImageUrl)
+            cell.textView.isHidden = true
             cell.messageImageView.isHidden = false
             cell.bubbleView.backgroundColor = UIColor.clear
         } else {
@@ -310,8 +321,12 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
         return NSString(string: text).boundingRect(with: size, options: options, attributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16)], context: nil)
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) { // may not need this anymore
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         collectionView?.collectionViewLayout.invalidateLayout()
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
     }
     
     @objc func handleSend() {
@@ -357,5 +372,71 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         handleSend()
         return true
+    }
+    
+    var startingFrame: CGRect?
+    var blackBackgroundView: UIView?
+    var startingImageVIew: UIImageView?
+    
+    func performZoomInForStartingImageView(startingImageVIew: UIImageView) {
+        
+        self.startingImageVIew = startingImageVIew
+        self.startingImageVIew?.isHidden = true
+        
+        startingFrame = startingImageVIew.superview?.convert(startingImageVIew.frame, to: nil)
+        
+        let zoomingImageView = UIImageView(frame: startingFrame!)
+        zoomingImageView.backgroundColor = UIColor.red
+        zoomingImageView.image = startingImageVIew.image
+        zoomingImageView.isUserInteractionEnabled = true
+        zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
+        
+        if let keyWindow = UIApplication.shared.keyWindow {
+            blackBackgroundView = UIView(frame: keyWindow.frame)
+            blackBackgroundView?.backgroundColor = UIColor.black
+            blackBackgroundView?.alpha = 0
+            
+            keyWindow.addSubview(blackBackgroundView!)
+            
+            keyWindow.addSubview(zoomingImageView)
+            
+            UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
+                self.inputContainerView.alpha = 0
+                self.blackBackgroundView?.alpha = 1
+                
+                
+                // h2 / w1 = h1 / w1
+                // h2 = h1 / w1 * w1
+                
+                let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
+                
+                zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: height)
+                
+                zoomingImageView.center = keyWindow.center
+                
+            }) { (completed) in
+                
+            }
+        }
+    }
+    
+    @objc func handleZoomOut(tapGesture: UITapGestureRecognizer) {
+        if let zoomOutImageView = tapGesture.view {
+            
+            zoomOutImageView.layer.cornerRadius = 12
+            zoomOutImageView.clipsToBounds = true
+            
+            UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
+                zoomOutImageView.frame = self.startingFrame!
+                self.blackBackgroundView?.alpha = 0
+                self.inputContainerView.alpha = 1
+                
+            }) { (completed) in
+                zoomOutImageView.removeFromSuperview()
+                self.startingImageVIew?.isHidden = false
+            }
+        }
     }
 }
