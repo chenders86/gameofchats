@@ -448,18 +448,18 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
     
     var startingFrame: CGRect?
     var blackBackgroundView: UIView?
-    var startingImageVIew: UIImageView?
+    var startingImageView: UIImageView?
     
-    func performZoomInForStartingImageView(startingImageVIew: UIImageView) {
+    func performZoomInForStartingImageView(startingImageView: UIImageView) {
         
-        self.startingImageVIew = startingImageVIew
-        self.startingImageVIew?.isHidden = true
+        self.startingImageView = startingImageView
+        self.startingImageView?.isHidden = true
         
-        startingFrame = startingImageVIew.superview?.convert(startingImageVIew.frame, to: nil)
+        startingFrame = startingImageView.superview?.convert(startingImageView.frame, to: nil)
         
         let zoomingImageView = UIImageView(frame: startingFrame!)
-        zoomingImageView.backgroundColor = UIColor.red
-        zoomingImageView.image = startingImageVIew.image
+        zoomingImageView.backgroundColor = UIColor.clear
+        zoomingImageView.image = startingImageView.image
         zoomingImageView.isUserInteractionEnabled = true
         zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomOut)))
         
@@ -507,7 +507,7 @@ class ChatLogController: UICollectionViewController, UITextFieldDelegate, UIColl
                 
             }) { (completed) in
                 zoomOutImageView.removeFromSuperview()
-                self.startingImageVIew?.isHidden = false
+                self.startingImageView?.isHidden = false
             }
         }
     }
